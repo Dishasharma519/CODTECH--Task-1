@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List Web Application</title>
+    <style>
+        /* Base Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f8ff;
+            background-size: cover;
+            background-position: center;
+            color: #333;
+            animation: fadeIn 2s ease-in;
+        }
+
+        /* Fade-in Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Container Styling */
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 50px auto;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            animation: slideIn 1s ease-out;
+        }
+
+        /* Slide-in Animation */
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Header Styling */
+        h1 {
+            text-align: center;
+            color: #007bff;
+            text-shadow: 1px 1px 5px rgba(0,0,0,0.1);
+            animation: zoomIn 1s ease-in-out;
+        }
+
+        /* Zoom-in Animation */
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            animation: fadeInNav 1s ease-in;
+        }
+
+        .nav-buttons button {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s;
+        }
+
+        .nav-buttons button:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeInNav {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Section Styling */
+        .section {
+            display: none;
+            animation: fadeInSection 0.5s ease-in;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeInSection {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Collapsible Content */
+        .collapsible-content {
+            display: none;
+            margin-top: 10px;
+            padding-left: 20px;
+            border-left: 3px solid #ddd;
+            animation: expandCollapse 0.3s ease-in-out;
+        }
+
+        h2 {
+            cursor: pointer;
+            margin: 15px 0;
+            padding: 15px;
+            background: linear-gradient(135deg, #f4f4f4, #e0e0e0);
+            border-radius: 5px;
+            transition: background 0.3s ease, transform 0.2s;
+        }
+
+        h2:hover {
+            background: #ddd;
+            transform: translateX(5px);
+        }
+
+        @keyframes expandCollapse {
+            from { height: 0; opacity: 0; }
+            to { height: auto; opacity: 1; }
+        }
+
+        /* Input and Button Styling */
+        .input-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .input-container input,
+        .input-container select {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            flex: 1 1 auto;
+            transition: transform 0.2s;
+        }
+
+        .input-container input:focus,
+        .input-container select:focus {
+            transform: scale(1.05);
+        }
+
+        .input-container button.add-task-button {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #28a745, #218838);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s;
+        }
+
+        .input-container button.add-task-button:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        /* Task List Styling */
+        .task-list {
+            list-style-type: none;
+            padding: 0;
+            animation: fadeInList 0.5s;
+        }
+
+        @keyframes fadeInList {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Task Item Styling */
+        .task-list li {
+            background: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease, transform 0.2s;
+            animation: bounceIn 0.5s ease-out;
+        }
+
+        .task-list li:hover {
+            background: #eef2f7;
+            transform: translateX(5px);
+        }
+
+        .task-list li.completed {
+            text-decoration: line-through;
+            background: #d4edda;
+        }
+
+        @keyframes bounceIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* Task Buttons */
+        .task-buttons button {
+            margin-left: 5px;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s;
+        }
+
+        .task-buttons button:nth-child(1) {
+            background: #007bff;
+            color: #fff;
+        }
+
+        .task-buttons button:nth-child(1):hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .task-buttons button:nth-child(2) {
+            background: #ffc107;
+            color: #fff;
+        }
+
+        .task-buttons button:nth-child(2):hover {
+            background: #e0a800;
+            transform: translateY(-2px);
+        }
+
+        .task-buttons button:nth-child(3) {
+            background: #dc3545;
+            color: #fff;
+        }
+
+        .task-buttons button:nth-child(3):hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        /* Filter Container */
+        .filter-container input {
+            padding: 12px;
+            width: 100%;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: transform 0.2s;
+        }
+
+        .filter-container input:focus {
+            transform: scale(1.05);
+        }
+
+        /* Customization Controls */
+        .customization-controls {
+            margin-top: 30px;
+            animation: fadeInControls 0.5s;
+        }
+
+        .customization-controls label,
+        .customization-controls input[type="file"],
+        .customization-controls select,
+        .customization-controls input[type="color"],
+        .customization-controls input[type="range"] {
+            display: block;
+            margin-top: 15px;
+        }
+
+        @keyframes fadeInControls {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Calendar Container */
+        .calendar-container {
+            margin-top: 30px;
+            animation: slideInCalendar 0.5s ease-out;
+        }
+
+        .calendar-container iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+        }
+
+        @keyframes slideInCalendar {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Sticky Notes */
+        .sticky-note {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: #ffeb3b;
+            color: #000;
+            padding: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            overflow: auto;
+            resize: both;
+            cursor: move;
+            animation: slideInStickyNote 0.5s ease-out;
+        }
+
+        @keyframes slideInStickyNote {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Dark Mode Styles */
+        .dark-mode {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+
+        .dark-mode .container {
+            background: rgba(34, 34, 34, 0.9);
+        }
+
+        /* Click Position Indicator */
+        #click-position {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            display: none;
+        }
+
+        /* Task Progress Bar */
+        .task-progress {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .task-progress div {
+            height: 20px;
+            background-color: #28a745;
+            text-align: center;
+            color: white;
+            line-height: 20px;
+            animation: progressBarAnimation 1s ease-in-out;
+        }
+
+        @keyframes progressBarAnimation {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        /* Task Categories */
+        .task-category {
+            font-size: 12px;
+            color: #666;
+            padding: 3px 5px;
+            background: #f4f4f4;
+            border-radius: 3px;
+            margin-left: 5px;
+        }
+
+        /* Subtasks Styling */
+        #subtasks-container {
+            margin-top: 30px;
+        }
+
+        #subtasks-container input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: calc(100% - 120px);
+            margin-right: 10px;
+        }
+
+        #subtasks-container button {
+            padding: 10px 20px;
+            background: #17a2b8;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s;
+        }
+
+        #subtasks-container button:hover {
+            background: #138496;
+            transform: translateY(-2px);
+        }
+
+        #subtasks-list {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        #subtasks-list li {
+            background: #e9ecef;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+
+        /* Comments Styling */
+        #comments-container {
+            margin-top: 30px;
+        }
+
+        #comments-container textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: vertical;
+        }
+
+        #comments-container button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s;
+        }
+
+        #comments-container button:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        #comments-list {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        #comments-list li {
+            background: #f8f9fa;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+
+        /* Task History */
+        #history-container {
+            margin-top: 30px;
+        }
+
+        #task-history {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #task-history li {
+            background: #e2e3e5;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation Buttons -->
+        <div class="nav-buttons">
+            <button onclick="showSection('guide')">User Guide</button>
+            <button onclick="showSection('todo')">My To-Do List</button>
+            <button onclick="showSection('calendar')">Calendar</button>
+            <button onclick="showSection('collaborators')">Collaborators</button>
+            <button onclick="showSection('group-chat')">Group Chat</button>
+        </div>
+
+        <!-- User Guide Section -->
+        <div id="guide" class="section">
+            <h1>User Guide: How to Use the To-Do List Application</h1>
+            <h2 onclick="toggleSection('introduction-content')">1. Introduction</h2>
+            <div id="introduction-content" class="collapsible-content">
+                <p>Welcome to the To-Do List application. This guide will walk you through the features and functionalities of the app, so you can manage your tasks efficiently.</p>
+            </div>
+            <h2 onclick="toggleSection('setup-content')">2. Setting Up</h2>
+            <div id="setup-content" class="collapsible-content">
+                <p>To set up the application:</p>
+                <ul>
+                    <li>Ensure you have a modern web browser installed.</li>
+                    <li>Open the application in your browser.</li>
+                    <li>Familiarize yourself with the user interface.</li>
+                </ul>
+            </div>
+            <h2 onclick="toggleSection('creating-content')">3. Creating a New Task</h2>
+            <div id="creating-content" class="collapsible-content">
+                <p>To create a new task:</p>
+                <ul>
+                    <li>Enter the task description in the input field.</li>
+                    <li>Select a category, due date, priority, and add any tags.</li>
+                    <li>Set a reminder if needed.</li>
+                    <li>Click the “Add Task” button to add it to the list.</li>
+                </ul>
+            </div>
+            <h2 onclick="toggleSection('managing-content')">4. Managing Tasks</h2>
+            <div id="managing-content" class="collapsible-content">
+                <p>To manage tasks:</p>
+                <ul>
+                    <li>Mark as Complete: Click on the task to mark it as complete. The task will appear with a line-through and a different background color.</li>
+                    <li>Edit Task: Click the "Edit" button next to a task to modify its details.</li>
+                    <li>Delete Task: Click the "Delete" button to remove a task from the list.</li>
+                    <li>Filter Tasks: Use the search bar to filter tasks by name or category.</li>
+                    <li>Sort Tasks: Sort tasks based on due date, priority, or status.</li>
+                </ul>
+            </div>
+            <h2 onclick="toggleSection('customizing-content')">5. Customizing the Interface</h2>
+            <div id="customizing-content" class="collapsible-content">
+                <p>You can customize the application's appearance to suit your preferences:</p>
+                <ul>
+                    <li>Dark Mode: Toggle the dark mode to switch between light and dark themes.</li>
+                    <li>Theme Color: Choose a color theme for the application.</li>
+                    <li>Font Size: Adjust the font size for better readability.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- To-Do List Section -->
+        <div id="todo" class="section active">
+            <h1>My To-Do List</h1>
+            <div class="input-container">
+                <button class="add-task-button" onclick="addTask()">Add Task</button>
+                <input type="text" id="task-description" placeholder="Task Description">
+                <input type="date" id="due-date">
+                <select id="priority">
+                    <option value="">Priority</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                </select>
+                <select id="category">
+                    <option value="">Category</option>
+                    <option value="work">Work</option>
+                    <option value="personal">Personal</option>
+                    <option value="shopping">Shopping</option>
+                </select>
+                <input type="text" id="tags" placeholder="Tags (comma-separated)">
+                <input type="datetime-local" id="reminder">
+            </div>
+
+            <div class="filter-container">
+                <input type="text" id="task-filter" placeholder="Filter tasks..." onkeyup="filterTasks()">
+            </div>
+
+            <ul id="task-list" class="task-list">
+                <!-- Task items will be added here dynamically -->
+            </ul>
+
+            <!-- Task Progress Bar -->
+            <div class="task-progress">
+                <div style="width: 0%">0%</div>
+            </div>
+
+            <!-- Subtasks Section -->
+            <div id="subtasks-container">
+                <input type="text" id="subtask-description" placeholder="Subtask Description">
+                <button onclick="addSubtask()">Add Subtask</button>
+                <ul id="subtasks-list"></ul>
+            </div>
+
+            <!-- Comments Section -->
+            <div id="comments-container">
+                <textarea id="task-comment" placeholder="Add a comment..."></textarea>
+                <button onclick="addComment()">Add Comment</button>
+                <ul id="comments-list"></ul>
+            </div>
+
+            <!-- Task History Section -->
+            <div id="history-container">
+                <h2>Task History</h2>
+                <ul id="task-history"></ul>
+            </div>
+        </div>
+
+        <!-- Calendar Section -->
+        <div id="calendar" class="section">
+            <h1>Calendar Integration</h1>
+            <div class="calendar-container">
+                <h2>Sync your tasks with your calendar for better management.</h2>
+                <button onclick="syncCalendar()">Sync with Calendar</button>
+                <iframe src="https://calendar.google.com/calendar/embed?src=YOUR_CALENDAR_ID" frameborder="0" scrolling="no"></iframe>
+            </div>
+        </div>
+
+        <!-- Collaborators Section -->
+        <div id="collaborators" class="section">
+            <h1>Collaborators</h1>
+            <div class="collaboration-container">
+                <h2>Manage Your Collaborators</h2>
+                <input type="text" id="collaborator-email" placeholder="Collaborator Email">
+                <button onclick="addCollaborator()">Add Collaborator</button>
+                <ul id="collaborators-list">
+                    <!-- Collaborators will be listed here -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- Group Chat Section -->
+        <div id="group-chat" class="section">
+            <h1>Group Chat</h1>
+            <div class="group-chat-container">
+                <h2>Chat with Your Team</h2>
+                <input type="text" id="chat-message" placeholder="Type a message">
+                <button onclick="sendMessage()">Send</button>
+                <ul id="chat-messages">
+                    <!-- Chat messages will be displayed here -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- Customization Section -->
+        <div class="customization-controls">
+            <h2>Customization Options</h2>
+            <label for="theme-selector">Select Background Theme</label>
+            <select id="theme-selector" onchange="changeBackground(this.value)">
+                <option value="">Select a Theme</option>
+                <option value="https://www.itl.cat/pngfile/big/212-2125958_red-and-black-wallpaper2-credens.jpg">Red and Black Honeycomb</option>
+                <option value="https://www.freevector.com/uploads/vector/preview/16416/FreeVector-Pop-Art-Pattern.jpg">Paper Art</option>
+                <option value="https://c4.wallpaperflare.com/wallpaper/562/627/814/circles-light-surface-dark-wallpaper-preview.jpg">Textile Design</option>
+                <option value="https://e1.pxfuel.com/desktop-wallpaper/102/596/desktop-wallpaper-colorful-designs-%C2%B7%E2%91%A0-colourfull.jpg">Colorful Designs</option>
+                <option value="https://img.pikbest.com/wp/202344/granite-stone-conceptual-landscape-pattern-white-pebbles-background-with-gravel-texture_9903063.jpg!sw800">Granite Stone</option>
+                <option value="https://e0.pxfuel.com/wallpapers/980/86/desktop-wallpaper-minions-6-macbook-pro-retina-background-and-minion-pattern.jpg">Minion Pattern</option>
+                <option value="https://d16kd6gzalkogb.cloudfront.net/magazine_images/Sarah-Morris-Artwork.jpg">Wide Walls</option>
+                <option value="https://images6.alphacoders.com/109/thumb-1920-1090348.jpg">Abstract Colors</option>
+                <option value="https://images.rawpixel.com/image_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIzLTAzL3JtNjIzLXMtYmFja2dyb3VuZC0wMDFjLmpwZw.jpg">Aesthetic Flowers</option>
+                <option value="https://wallpapers.com/images/hd/batik-background-cx9y0zixdekizp9q.jpg">Batik</option>
+                <option value="https://images.pexels.com/photos/172292/pexels-photo-172292.jpeg?cs=srgb&dl=pexels-fwstudio-33348-172292.jpg&fm=jpg">Nature Wood</option>
+                <option value="https://png.pngtree.com/thumb_back/fh260/background/20230704/pngtree-natural-green-leaf-pattern-3d-rendered-raster-illustration-for-background-and-image_3731630.jpg">Green Leaf</option>
+                <option value="https://img.pikbest.com/backgrounds/20190712/cute-white-bunny-on-the-sky-seamless-pattern-background-v_1427986jpg!sw800">Bunny Sky</option>
+                <option value="https://i.pinimg.com/736x/55/2e/28/552e288b4c81447998a67505fc74c8f7.jpg">Magazine Design</option>
+                <option value="https://www.patternpictures.com/wp-content/uploads/Sunflowers-field-pattern-background-landscape-patternpictures-5618-1500x815.jpg">Sunflower</option>
+            </select>
+
+            <label for="dark-mode-toggle">Dark Mode:</label>
+            <input type="checkbox" id="dark-mode-toggle" onchange="toggleDarkMode()">
+
+            <label for="font-size">Font Size:</label>
+            <input type="range" id="font-size" min="12" max="24" step="1" value="16" onchange="updateFontSize(this.value)">
+        </div>
+
+        <!-- Sticky Notes -->
+        <div id="sticky-notes-container">
+            <button onclick="addStickyNote()">Add Sticky Note</button>
+        </div>
+    </div>
+
+    <div id="click-position"></div>
+
+    <script>
+        // Section Navigation
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        // Toggle Collapsible Content
+        function toggleSection(contentId) {
+            const content = document.getElementById(contentId);
+            content.classList.toggle('collapsible-content');
+        }
+
+        // Add New Task
+        function addTask() {
+            const description = document.getElementById('task-description').value;
+            const dueDate = document.getElementById('due-date').value;
+            const priority = document.getElementById('priority').value;
+            const category = document.getElementById('category').value;
+            const tags = document.getElementById('tags').value;
+            const reminder = document.getElementById('reminder').value;
+
+            if (description.trim() === '') return;
+
+            const taskList = document.getElementById('task-list');
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <span>${description} ${dueDate ? `(Due: ${dueDate})` : ''} ${priority ? `(Priority: ${priority})` : ''} ${category ? `<span class="task-category">${category}</span>` : ''} ${tags ? `(Tags: ${tags})` : ''}</span>
+                <div class="task-buttons">
+                    <button onclick="markComplete(this)">Complete</button>
+                    <button onclick="editTask(this)">Edit</button>
+                    <button onclick="deleteTask(this)">Delete</button>
+                </div>
+                <div class="task-progress">
+                    <div style="width: 0%">0%</div>
+                </div>
+            `;
+            taskList.appendChild(li);
+
+            // Clear input fields
+            document.getElementById('task-description').value = '';
+            document.getElementById('due-date').value = '';
+            document.getElementById('priority').value = '';
+            document.getElementById('category').value = '';
+            document.getElementById('tags').value = '';
+            document.getElementById('reminder').value = '';
+
+            if (reminder) {
+                setReminder(description, reminder);
+            }
+        }
+
+        // Mark Task as Complete
+        function markComplete(button) {
+            const task = button.parentElement.parentElement;
+            task.classList.toggle('completed');
+            addToHistory(task.querySelector('span').textContent);
+            updateProgress(task, 100);
+        }
+
+        // Edit Task
+        function editTask(button) {
+            const task = button.parentElement.parentElement;
+            const newDescription = prompt('Edit task description:', task.querySelector('span').textContent);
+            if (newDescription) {
+                task.querySelector('span').textContent = newDescription;
+            }
+        }
+
+        // Delete Task
+        function deleteTask(button) {
+            const task = button.parentElement.parentElement;
+            task.remove();
+        }
+
+        // Filter Tasks
+        function filterTasks() {
+            const filter = document.getElementById('task-filter').value.toLowerCase();
+            const tasks = document.querySelectorAll('#task-list li');
+            tasks.forEach(task => {
+                const text = task.querySelector('span').textContent.toLowerCase();
+                task.style.display = text.includes(filter) ? '' : 'none';
+            });
+        }
+
+        // Add Collaborator
+        function addCollaborator() {
+            const email = document.getElementById('collaborator-email').value;
+            if (email.trim() === '') return;
+
+            const collaboratorsList = document.getElementById('collaborators-list');
+            const li = document.createElement('li');
+            li.textContent = email;
+            collaboratorsList.appendChild(li);
+            document.getElementById('collaborator-email').value = '';
+        }
+
+        // Send Group Chat Message
+        function sendMessage() {
+            const message = document.getElementById('chat-message').value;
+            if (message.trim() === '') return;
+
+            const chatMessages = document.getElementById('chat-messages');
+            const li = document.createElement('li');
+            li.textContent = message;
+            chatMessages.appendChild(li);
+            document.getElementById('chat-message').value = '';
+        }
+
+        // Sync Calendar
+        function syncCalendar() {
+            alert('This would integrate with your calendar.');
+        }
+
+        // Change Background Theme
+        function changeBackground(imageUrl) {
+            document.body.style.backgroundImage = `url(${imageUrl})`;
+        }
+
+        // Toggle Dark Mode
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+        }
+
+        // Update Font Size
+        function updateFontSize(size) {
+            document.body.style.fontSize = size + 'px';
+        }
+
+        // Update Progress Bar
+        function updateProgress(task, percentage) {
+            const progressBar = task.querySelector('.task-progress div');
+            progressBar.style.width = percentage + '%';
+            progressBar.textContent = percentage + '%';
+        }
+
+        // Set Task Reminder
+        function setReminder(description, reminderTime) {
+            const reminderDate = new Date(reminderTime);
+            const now = new Date();
+
+            const timeUntilReminder = reminderDate.getTime() - now.getTime();
+            if (timeUntilReminder > 0) {
+                setTimeout(() => {
+                    alert(`Reminder: ${description}`);
+                }, timeUntilReminder);
+            }
+        }
+
+        // Add Subtask
+        function addSubtask() {
+            const subtaskDescription = document.getElementById('subtask-description').value;
+            if (subtaskDescription.trim() === '') return;
+
+            const subtasksList = document.getElementById('subtasks-list');
+            const li = document.createElement('li');
+            li.textContent = subtaskDescription;
+            subtasksList.appendChild(li);
+
+            // Clear input field
+            document.getElementById('subtask-description').value = '';
+        }
+
+        // Add Comment
+        function addComment() {
+            const commentText = document.getElementById('task-comment').value;
+            if (commentText.trim() === '') return;
+
+            const commentsList = document.getElementById('comments-list');
+            const li = document.createElement('li');
+            li.textContent = commentText;
+            commentsList.appendChild(li);
+
+            // Clear input field
+            document.getElementById('task-comment').value = '';
+        }
+
+        // Add to Task History
+        function addToHistory(task) {
+            const historyList = document.getElementById('task-history');
+            const li = document.createElement('li');
+            li.textContent = `Completed: ${task}`;
+            historyList.appendChild(li);
+        }
+
+        // Add Sticky Note
+        function addStickyNote() {
+            const stickyNote = document.createElement('div');
+            stickyNote.className = 'sticky-note';
+            stickyNote.contentEditable = true;
+            stickyNote.textContent = 'New Note';
+            document.body.appendChild(stickyNote);
+
+            stickyNote.onmousedown = function(event) {
+                let shiftX = event.clientX - stickyNote.getBoundingClientRect().left;
+                let shiftY = event.clientY - stickyNote.getBoundingClientRect().top;
+
+                moveAt(event.pageX, event.pageY);
+
+                function moveAt(pageX, pageY) {
+                    stickyNote.style.left = pageX - shiftX + 'px';
+                    stickyNote.style.top = pageY - shiftY + 'px';
+                }
+
+                function onMouseMove(event) {
+                    moveAt(event.pageX, event.pageY);
+                }
+
+                document.addEventListener('mousemove', onMouseMove);
+
+                stickyNote.onmouseup = function() {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    stickyNote.onmouseup = null;
+                };
+            };
+
+            stickyNote.ondragstart = function() {
+                return false;
+            };
+        }
+
+        // Show Click Position
+        document.addEventListener('click', function(e) {
+            const clickPosition = document.getElementById('click-position');
+            clickPosition.style.display = 'block';
+            clickPosition.textContent = `Clicked at X: ${e.clientX}, Y: ${e.clientY}`;
+            setTimeout(() => {
+                clickPosition.style.display = 'none';
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
